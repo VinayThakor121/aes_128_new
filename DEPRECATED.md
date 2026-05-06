@@ -1,6 +1,6 @@
 # DEPRECATED LEGACY FILES
 
-The files in `Decryption/` and `Encrytption/` (note: typo in original directory name) are the **original** AES-128-only implementation. They are kept for reference but are **not used** in the new architecture.
+The files in `Decryption/` and `Encryption/` (note: typo "Encrytption" in original directory name) are the **original** AES-128-only implementation. They are kept for reference but are **not used** in the new architecture.
 
 ## Issues in Legacy Files
 

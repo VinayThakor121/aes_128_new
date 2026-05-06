@@ -1,7 +1,7 @@
-// AES-128 Testbench – NIST FIPS-197 Appendix B / Appendix C.1
+// AES-128 Testbench – NIST FIPS-197 Appendix C.1
 // Key    : 000102030405060708090a0b0c0d0e0f
 // Plaintext : 00112233445566778899aabbccddeeff
-// Ciphertext: 69c4e0d86a7b04300d8a8012604bc854
+// Ciphertext: 69c4e0d86a7b0430d8cdb78070b4c55a
 `timescale 1ns / 1ps
 
 module tb_aes128;
