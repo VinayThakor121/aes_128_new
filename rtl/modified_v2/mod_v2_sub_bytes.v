@@ -25,6 +25,8 @@ module mod_v2_sub_bytes (
 
 // ----------------------------------------------------------------
 // XORkey generation: XOR all 4 row-bytes across columns
+// These wires are accessible from testbenches via hierarchical references
+// (e.g. u_enc.u_sb.xorkey0) for debug and waveform inspection.
 // Column-major layout: byte(row r, col c) = data[127 - (c*4+r)*8 -: 8]
 //   byte indices per row: row 0 → 0,4,8,12 ; row 1 → 1,5,9,13 ; ...
 //   bit positions:        row 0 → [127:120],[95:88],[63:56],[31:24]
@@ -69,8 +71,5 @@ generate
         );
     end
 endgenerate
-
-// Expose XORkeys for debug/testbench visibility
-// (These wires are observable via hierarchical references in testbenches.)
 
 endmodule

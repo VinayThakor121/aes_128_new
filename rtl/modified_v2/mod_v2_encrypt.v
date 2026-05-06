@@ -49,7 +49,7 @@ reg [127:0] state_reg;
 reg [3:0]   round_cnt;
 
 // ----------------------------------------------------------------
-// Combinatorial round datapath (driven from state_reg + round_cnt)
+// Combinational round datapath (driven from state_reg + round_cnt)
 //
 // Modified path:  mod_v2_sub_bytes(state_reg, rk[round_cnt])
 //                 → ShiftRows  → MixColumns
@@ -59,7 +59,7 @@ reg [3:0]   round_cnt;
 wire [127:0] rk_for_sb;
 wire [127:0] sb_out, sr_out, mc_out;
 
-// Feed the current round key into ModSubBytes combinatorially.
+// Feed the current round key into ModSubBytes combinationally.
 // round_cnt is a register, get_rk is a function over combinatorial
 // round_keys_flat, so this path has no latches.
 assign rk_for_sb = get_rk(round_cnt);

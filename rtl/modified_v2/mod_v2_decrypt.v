@@ -55,7 +55,7 @@ reg  [127:0] state_reg;
 reg  [3:0]   round_cnt;
 
 // ----------------------------------------------------------------
-// Combinatorial round datapath
+// Combinational round datapath
 //
 //   isr_out    = InvShiftRows(state_reg)               [standard baseline]
 //   mod_isb    = InvModSubBytes(isr_out, rk[round_cnt+1])  [modified]
