@@ -1,4 +1,4 @@
-## Basys 3 (XC7A35T) — Constraints for uart_aes_top
+## Basys 3 (XC7A35T) — Constraints for uart_aes192_top
 ## Vivado XDC format
 ##
 ## Board reference: Digilent Basys 3 Reference Manual, Rev. D
