@@ -66,8 +66,9 @@ set_property IOSTANDARD LVCMOS33 [get_ports {led[7]}]
 ## automatically.
 ##
 ## WARNING: Do NOT add "set_max_delay -datapath_only" for same-clock
-## register-to-register paths.  That constraint disables hold checking
-## and can cause metastability in silicon.
+## register-to-register paths.  That constraint disables hold checking,
+## which can lead to undetected hold violations that result in metastability
+## in silicon.
 ##
 ## Recommended Vivado implementation strategy for timing closure:
 ##   Synthesis  : Flow_AreaOptimized_high  (or Flow_PerfOptimized_high)

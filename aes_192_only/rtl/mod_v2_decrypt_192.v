@@ -43,7 +43,7 @@ localparam [2:0]
 reg [2:0] fsm;
 
 // -----------------------------------------------------------------------
-// Sequential key expansion (registered key_load — race-free)
+// Sequential key expansion (registered key_load -- race-free)
 // -----------------------------------------------------------------------
 wire [1663:0] round_keys_flat;
 wire          rk_valid;

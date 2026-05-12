@@ -22,7 +22,7 @@
 // -----------------------
 //   phase mux (~2 ns) → RotWord (wiring) → SubWord (~5.5 ns)
 //   → XOR rcon (~0 ns, folded into LUT) → XOR word-tree (~1 ns) → register
-//   Total ≈ 8.5 ns  ⟶  fits comfortably inside a 10 ns / 100 MHz clock.
+//   Total ~= 8.5 ns  ->  fits comfortably inside a 10 ns / 100 MHz clock.
 //
 // Area
 // ----
