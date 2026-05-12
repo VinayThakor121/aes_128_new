@@ -33,6 +33,7 @@ always @(posedge clk or posedge rst) begin
                 case (result_idx)
                     2'd0: begin tx_shift <= orig_pt; tx_byte <= 8'h02; end
                     2'd1: begin tx_shift <= ct192;   tx_byte <= 8'h12; end
+                    2'd2: begin tx_shift <= pt192;   tx_byte <= 8'h22; end
                     default: begin tx_shift <= pt192; tx_byte <= 8'h22; end
                 endcase
                 tx_valid <= 1'b1; chksum <= 0; byte_cnt <= 0; state <= S_TX_DATA;
