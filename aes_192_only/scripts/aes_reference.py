@@ -110,7 +110,6 @@ def main():
                         help="192-bit key (48 hex chars)")
     parser.add_argument("--key256",   default=DEFAULT_K256,
                         help="256-bit key (64 hex chars)")
-    parser.parse_args()
     run(parser.parse_args())
 
 
