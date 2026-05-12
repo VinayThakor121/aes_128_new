@@ -6,6 +6,7 @@ module aes_controller_192 (
     input  [127:0] plaintext,
     input  [191:0] key192,
     input         pkt_valid,
+    output reg [127:0] orig_pt,
     output reg [127:0] ct192,
     output reg [127:0] pt192,
     output reg         results_ready
@@ -29,13 +30,13 @@ reg [2:0] state;
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         state <= S_IDLE; r_plaintext <= 0; r_key192 <= 0; din192 <= 0;
-        enc_dec <= 1'b1; start192 <= 1'b0; ct192 <= 0; pt192 <= 0; results_ready <= 1'b0;
+        enc_dec <= 1'b1; start192 <= 1'b0; orig_pt <= 0; ct192 <= 0; pt192 <= 0; results_ready <= 1'b0;
     end else begin
         start192 <= 1'b0;
         results_ready <= 1'b0;
         case (state)
             S_IDLE:  if (pkt_valid) state <= S_LATCH;
-            S_LATCH: begin r_plaintext <= plaintext; r_key192 <= key192; state <= S_START_ENC; end
+            S_LATCH: begin r_plaintext <= plaintext; r_key192 <= key192; orig_pt <= plaintext; state <= S_START_ENC; end
             S_START_ENC: begin din192 <= r_plaintext; enc_dec <= 1'b1; start192 <= 1'b1; state <= S_WAIT_ENC; end
             S_WAIT_ENC: if (done192) begin ct192 <= out192; state <= S_START_DEC; end
             S_START_DEC: begin din192 <= ct192; enc_dec <= 1'b0; start192 <= 1'b1; state <= S_WAIT_DEC; end

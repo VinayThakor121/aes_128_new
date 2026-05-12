@@ -26,11 +26,11 @@ packet_decoder_192 u_pkt (
     .plaintext(plaintext), .key192(key192), .pkt_valid(pkt_valid), .pkt_error(pkt_error)
 );
 
-wire [127:0] ct192, pt192;
+wire [127:0] ct192, pt192, orig_pt;
 wire results_ready;
 aes_controller_192 u_ctrl (
     .clk(clk), .rst(rst), .plaintext(plaintext), .key192(key192), .pkt_valid(pkt_valid),
-    .ct192(ct192), .pt192(pt192), .results_ready(results_ready)
+    .orig_pt(orig_pt), .ct192(ct192), .pt192(pt192), .results_ready(results_ready)
 );
 
 wire [7:0] tx_byte;
@@ -39,7 +39,7 @@ uart_tx u_tx (.clk(clk), .rst(rst), .baud_tick(baud_tick), .tx_byte(tx_byte), .t
 
 wire tx_done;
 output_formatter_192 u_fmt (
-    .clk(clk), .rst(rst), .ct192(ct192), .pt192(pt192), .results_ready(results_ready),
+    .clk(clk), .rst(rst), .orig_pt(orig_pt), .ct192(ct192), .pt192(pt192), .results_ready(results_ready),
     .tx_byte(tx_byte), .tx_valid(tx_valid), .tx_ready(tx_ready), .tx_done(tx_done)
 );
 
