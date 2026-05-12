@@ -60,11 +60,22 @@ set_property IOSTANDARD LVCMOS33 [get_ports {led[7]}]
 ## ---------------------------------------------------------------
 ## Timing constraints
 ## ---------------------------------------------------------------
-## The AES critical path (S-box chains) typically closes at ~150-200 MHz
-## on Artix-7.  A 10 ns (100 MHz) constraint is easily achievable.
-set_max_delay -datapath_only 10.000 \
-    -from [get_clocks sys_clk_pin] \
-    -to   [get_clocks sys_clk_pin]
+## The clock period (10.000 ns / 100 MHz) is already fully defined by
+## create_clock above.  No additional set_max_delay is needed for
+## same-domain paths — Vivado enforces setup/hold from the clock period
+## automatically.
+##
+## WARNING: Do NOT add "set_max_delay -datapath_only" for same-clock
+## register-to-register paths.  That constraint disables hold checking
+## and can cause metastability in silicon.
+##
+## Recommended Vivado implementation strategy for timing closure:
+##   Synthesis  : Flow_AreaOptimized_high  (or Flow_PerfOptimized_high)
+##   Opt design : -directive Explore
+##   Place      : -directive AggressiveTiming
+##   Post-place phys_opt: -directive AggressiveExplore
+##   Route      : -directive AggressiveExplore
+##   Post-route phys_opt: -directive AggressiveExplore
 
 ## ---------------------------------------------------------------
 ## Bitstream configuration (optional but recommended for Basys 3)
