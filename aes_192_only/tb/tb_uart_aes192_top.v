@@ -69,9 +69,35 @@ initial begin
 
     if (u_dut.u_ctrl.ct192 === REF_CT192) pass_cnt = pass_cnt + 1; else fail_cnt = fail_cnt + 1;
     if (u_dut.u_ctrl.pt192 === PT)        pass_cnt = pass_cnt + 1; else fail_cnt = fail_cnt + 1;
+    if (u_dut.u_ctrl.orig_pt === PT)      pass_cnt = pass_cnt + 1; else fail_cnt = fail_cnt + 1;
 
     wait (got_tx_done);
-    $display("UART_AES192_ONLY PASS=%0d FAIL=%0d CT192=%h PT192=%h", pass_cnt, fail_cnt, u_dut.u_ctrl.ct192, u_dut.u_ctrl.pt192);
+
+    $display("");
+    $display("## AES-192 UART TEST");
+    $display("");
+    $display("Input Plaintext:");
+    $display("%H", u_dut.u_ctrl.orig_pt);
+    $display("");
+    $display("Encryption Key:");
+    $display("%H", K192);
+    $display("");
+    $display("Encrypted Ciphertext:");
+    $display("%H", u_dut.u_ctrl.ct192);
+    $display("");
+    $display("Decrypted Plaintext:");
+    $display("%H", u_dut.u_ctrl.pt192);
+    $display("");
+    if (u_dut.u_ctrl.pt192 === PT) begin
+        $display("RESULT:");
+        $display("PASS - Retrieved plaintext matches original plaintext");
+    end else begin
+        $display("RESULT:");
+        $display("FAIL - Retrieved plaintext does NOT match original plaintext");
+    end
+    $display("");
+    $display("UART_AES192_ONLY PASS=%0d FAIL=%0d CT192=%h PT192=%h",
+             pass_cnt, fail_cnt, u_dut.u_ctrl.ct192, u_dut.u_ctrl.pt192);
     $finish;
 end
 

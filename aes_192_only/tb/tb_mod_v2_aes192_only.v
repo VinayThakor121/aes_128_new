@@ -25,6 +25,7 @@ initial begin
     @(posedge clk); start = 1; @(posedge clk); start = 0;
     @(posedge enc_done); @(posedge clk);
 
+    // Verify ciphertext is the modified-v2 value (not standard AES)
     if (ciphertext !== STD_AES_CT) pass_count = pass_count + 1; else fail_count = fail_count + 1;
     if (ciphertext === MOD_CT_REF) pass_count = pass_count + 1; else fail_count = fail_count + 1;
 
@@ -34,6 +35,29 @@ initial begin
 
     if (recovered_pt === PLAINTEXT) pass_count = pass_count + 1; else fail_count = fail_count + 1;
 
+    $display("");
+    $display("## AES-192 UART TEST");
+    $display("");
+    $display("Input Plaintext:");
+    $display("%H", PLAINTEXT);
+    $display("");
+    $display("Encryption Key:");
+    $display("%H", KEY);
+    $display("");
+    $display("Encrypted Ciphertext:");
+    $display("%H", ciphertext);
+    $display("");
+    $display("Decrypted Plaintext:");
+    $display("%H", recovered_pt);
+    $display("");
+    if (recovered_pt === PLAINTEXT) begin
+        $display("RESULT:");
+        $display("PASS - Retrieved plaintext matches original plaintext");
+    end else begin
+        $display("RESULT:");
+        $display("FAIL - Retrieved plaintext does NOT match original plaintext");
+    end
+    $display("");
     $display("AES192_ONLY_MOD_V2 PASS=%0d FAIL=%0d CT=%h PT=%h", pass_count, fail_count, ciphertext, recovered_pt);
     $finish;
 end

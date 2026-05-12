@@ -5,6 +5,11 @@ import sys
 DEFAULT_PT   = bytes.fromhex("00112233445566778899aabbccddeeff")
 DEFAULT_K192 = bytes.fromhex("000102030405060708090a0b0c0d0e0f1011121314151617")
 
+# Response frame IDs
+FRAME_ORIG_PT = 0x02   # original plaintext echoed back
+FRAME_CT      = 0x12   # encrypted ciphertext
+FRAME_DEC_PT  = 0x22   # decrypted plaintext (should match original)
+
 
 def build_packet(plaintext: bytes, key192: bytes) -> bytes:
     if len(plaintext) != 16 or len(key192) != 24:
@@ -18,22 +23,32 @@ def build_packet(plaintext: bytes, key192: bytes) -> bytes:
     return pkt
 
 
+def _parse_frame(data: bytes, offset: int, expected_id: int) -> bytes:
+    """Parse one 18-byte response frame: [ID][16 data bytes][checksum]."""
+    if data[offset] != expected_id:
+        raise ValueError(
+            f"Frame at offset {offset}: expected ID 0x{expected_id:02X}, got 0x{data[offset]:02X}"
+        )
+    payload = data[offset + 1 : offset + 17]
+    chk = 0
+    for b in payload:
+        chk ^= b
+    if chk != data[offset + 17]:
+        raise ValueError(
+            f"Frame at offset {offset}: checksum mismatch "
+            f"(calc=0x{chk:02X}, got=0x{data[offset+17]:02X})"
+        )
+    return bytes(payload)
+
+
 def parse_response(data: bytes) -> dict:
-    if len(data) != 36:
-        raise ValueError(f"Expected 36 bytes, got {len(data)}")
-    out = {}
-    for i, rid in enumerate([0x12, 0x22]):
-        base = i * 18
-        if data[base] != rid:
-            raise ValueError(f"Frame {i}: expected ID 0x{rid:02X}, got 0x{data[base]:02X}")
-        frame = data[base+1:base+17]
-        chk = 0
-        for b in frame:
-            chk ^= b
-        if chk != data[base+17]:
-            raise ValueError(f"Frame {i}: checksum mismatch")
-        out[rid] = frame
-    return out
+    """Parse 54-byte response: orig_pt frame, ct frame, dec_pt frame."""
+    if len(data) != 54:
+        raise ValueError(f"Expected 54 bytes, got {len(data)}")
+    orig_pt = _parse_frame(data,  0, FRAME_ORIG_PT)
+    ct      = _parse_frame(data, 18, FRAME_CT)
+    dec_pt  = _parse_frame(data, 36, FRAME_DEC_PT)
+    return {FRAME_ORIG_PT: orig_pt, FRAME_CT: ct, FRAME_DEC_PT: dec_pt}
 
 
 def run(args):
@@ -53,15 +68,35 @@ def run(args):
         ser.reset_output_buffer()
         ser.write(pkt)
         ser.flush()
-        resp = ser.read(36)
+        resp = ser.read(54)   # 3 frames x 18 bytes each
     finally:
         ser.close()
 
     parsed = parse_response(resp)
-    print(f"CT192: {parsed[0x12].hex()}")
-    print(f"PT192: {parsed[0x22].hex()}")
-    if args.verify_roundtrip:
-        print("Round-trip:", "PASS" if parsed[0x22] == pt else "FAIL")
+
+    print()
+    print("## AES-192 UART TEST")
+    print()
+    print("Input Plaintext:")
+    print(parsed[FRAME_ORIG_PT].hex().upper())
+    print()
+    print("Encryption Key:")
+    print(k192.hex().upper())
+    print()
+    print("Encrypted Ciphertext:")
+    print(parsed[FRAME_CT].hex().upper())
+    print()
+    print("Decrypted Plaintext:")
+    print(parsed[FRAME_DEC_PT].hex().upper())
+    print()
+
+    match = (parsed[FRAME_DEC_PT] == pt)
+    print("RESULT:")
+    if match:
+        print("PASS - Retrieved plaintext matches original plaintext")
+    else:
+        print("FAIL - Retrieved plaintext does NOT match original plaintext")
+    print()
 
 
 def main():
@@ -70,7 +105,6 @@ def main():
     ap.add_argument("--baud", type=int, default=115200)
     ap.add_argument("--plaintext", default=DEFAULT_PT.hex())
     ap.add_argument("--key192", default=DEFAULT_K192.hex())
-    ap.add_argument("--verify-roundtrip", action="store_true")
     run(ap.parse_args())
 
 
